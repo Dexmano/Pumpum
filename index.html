@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kamano & Dex Webpage</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Comic Sans MS", cursive;
+      background-image: url('https://i.imgur.com/N1aCqO2.jpg'); /* peonies and hearts */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    .question-box {
+      background-color: rgba(0, 0, 0, 0.6);
+      display: inline-block;
+      padding: 20px;
+      border-radius: 20px;
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      background-color: #ff69b4;
+      color: white;
+    }
+
+    select {
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 1em;
+    }
+
+    #fireworks-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="question-box" id="content">
+    <h2>Do you know who Kamano is?</h2>
+    <button onclick="firstAnswer(true)">Yes</button>
+    <button onclick="firstAnswer(false)">No</button>
+  </div>
+
+  <div id="fireworks-container"></div>
+
+  <script>
+    function firstAnswer(isYes) {
+      const content = document.getElementById('content');
+      if (isYes) {
+        content.innerHTML = `
+          <h2>Pumzie, do you think Dex misses you?</h2>
+          <button onclick="secondAnswer(true)">Yes</button>
+          <button onclick="secondAnswer(false)">No</button>
+        `;
+      } else {
+        content.innerHTML = `<h2>The only right answer is YES 💖</h2>`;
+      }
+    }
+
+    function secondAnswer(isYes) {
+      const content = document.getElementById('content');
+      if (isYes) {
+        content.innerHTML = `
+          <h2>When can we see each other?</h2>
+          <select id="daySelect">
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+            <option>Thursday</option>
+            <option>Friday</option>
+          </select>
+          <br><br>
+          <button onclick="finalMessage()">Submit</button>
+        `;
+      } else {
+        content.innerHTML = `<h2>Just only pick YES ❤️</h2>`;
+      }
+    }
+
+    function finalMessage() {
+      const content = document.getElementById('content');
+      const day = document.getElementById('daySelect').value;
+      content.innerHTML = `
+        <h2>Thank you for participating cutie 💕</h2>
+        <p>Let's make this connection explosive like these fireworks 🎆</p>
+        <p>See you on <strong>${day}</strong>!</p>
+      `;
+      startFireworks();
+    }
+
+    function startFireworks() {
+      const canvas = document.createElement("canvas");
+      document.getElementById("fireworks-container").appendChild(canvas);
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const ctx = canvas.getContext("2d");
+
+      let particles = [];
+
+      function createFirework() {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height / 2;
+        for (let i = 0; i < 100; i++) {
+          particles.push({
+            x: x,
+            y: y,
+            radius: Math.random() * 2 + 1,
+            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+            angle: Math.random() * 2 * Math.PI,
+            speed: Math.random() * 5 + 1,
+            alpha: 1
+          });
+        }
+      }
+
+      function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((p, index) => {
+          p.x += Math.cos(p.angle) * p.speed;
+          p.y += Math.sin(p.angle) * p.speed;
+          p.alpha -= 0.01;
+          if (p.alpha <= 0) particles.splice(index, 1);
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+          ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      setInterval(createFirework, 800);
+      draw();
+    }
+  </script>
+</body>
+</html>
